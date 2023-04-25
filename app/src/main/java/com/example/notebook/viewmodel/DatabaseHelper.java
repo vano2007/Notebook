@@ -2,6 +2,7 @@ package com.example.notebook.viewmodel;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -73,4 +74,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Данные в БД успешно добавлены", Toast.LENGTH_SHORT).show();
         }
     }
+    // 2) чтение таблицы БД
+    public Cursor readNotes(){
+
+        // формирование запроса к БД
+        String query = "SELECT * FROM " +  tableName;
+
+        // метод getReadableDatabase() получает БД для чтения
+        SQLiteDatabase database= this.getReadableDatabase();
+
+        // создаём нулевой курсор
+        Cursor cursor = null;
+
+        if (database != null){ // если БД существует, то инициализируем курсор
+            cursor = database.rawQuery(query,null);
+        }
+
+        // возврат курсора
+        return  cursor;
+    }
+    // 3) удаление таблицы БД
+    public void deleteAllNotes() {
+
+        // проверка подключения к БД
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        // формирование запроса удаления таблицы БД
+        String query = "DELETE FROM " + tableName;
+        database.execSQL(query);
+
+    }
+    // 4) обновление записи в БД
+    public void updateNotes(String title, String description , String id){
+
+        // проверка подключения к БД
+        SQLiteDatabase database =  this.getWritableDatabase();
+
+        // создание контейнера для данных
+        ContentValues cv = new ContentValues();
+        // запись данных в контейнер
+        cv.put(columnTitle,title);
+        cv.put(columnDescription, description);
+
+        // обновление записи по id, где в метод update() подаются
+        // (название таблицы, данные для обновления, запись для проверки id, запись в текстовый массив id)
+        long result  = database.update(tableName, cv,"id=?", new String[]{id});
+
+        if (result == -1) {
+            Toast.makeText(context, "Обновление не получилось", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Обновление прошло успешно", Toast.LENGTH_SHORT).show();
+        }
+    }
+    // 5) удаление записи по id
+    public  void  deleteSingleItem(String id){
+
+        // проверка подключения к БД
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // удаление записи по id, где в метод delete() подаются
+        // (название таблицы, запись для проверки id, запись в текстовый массив id)
+        long result = db.delete(tableName,"id=?", new String[]{id});
+
+        if (result == -1) {
+            Toast.makeText(context, "Запись не удалена", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Запись успешно удалена", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
