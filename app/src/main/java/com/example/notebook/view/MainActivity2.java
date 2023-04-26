@@ -1,14 +1,18 @@
 package com.example.notebook.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.notebook.R;
 import com.example.notebook.model.Notebook;
+import com.example.notebook.viewmodel.Adapter;
 import com.example.notebook.viewmodel.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -24,6 +28,8 @@ public class MainActivity2 extends AppCompatActivity {
     private List<Notebook> notesList; // поле для контейнера списка заметок
 
     private DatabaseHelper database; // поле работы с БД
+
+    private Adapter adapter; // поле для адаптера
 
 
     @Override
@@ -42,7 +48,7 @@ public class MainActivity2 extends AppCompatActivity {
         fetchAllNotes();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // задание структуры вывода данных в recyclerView
-        adapter = new Adapter(this, SecondActivity.this, notesList); // инициализация адаптера и передача в рего данных из БД
+        adapter = new Adapter(this, MainActivity2.this, notesList); // инициализация адаптера и передача в рего данных из БД
         recyclerView.setAdapter(adapter); // передача в recyclerView адаптер
 
         // обработка нажатия кнопки создания новой заметки
@@ -50,7 +56,7 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // переключение на новую активность
-                startActivity(new Intent(SecondActivity.this, AddNotesActivity.class));
+                startActivity(new Intent(MainActivity2.this, AddNotesActivity.class));
             }
         });
     }
